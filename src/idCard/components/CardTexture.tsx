@@ -59,6 +59,8 @@ export default function CardTexture({ firstName, lastName, userId, batch, batchI
 
                 <CreateText
                     fontSize={100}
+                    color={"#83accc"}
+
                     fillOpacity={.15}
                     setTransform={(e, width) => {
                         e.position.set(225, 260 - width! / 2260 - width! / 2, 0)
@@ -71,7 +73,7 @@ export default function CardTexture({ firstName, lastName, userId, batch, batchI
                 <group position={[0, 85, 0.1]}>
                     <mesh position={[266, 0, 0]}>
                         <planeGeometry args={[20, 400]} />
-                        <meshBasicMaterial color='#e68600' />
+                        <meshBasicMaterial color='#fff' />
                     </mesh>
 
                     <mesh position={[256, 0, 0]}>
@@ -83,7 +85,7 @@ export default function CardTexture({ firstName, lastName, userId, batch, batchI
                 <CreateText
                     fontSize={58}
                     fillOpacity={0}
-                    strokeColor={"#e68600"}
+                    strokeColor={"#77b1dd"}
                     strokeWidth={1.5}
                     lineHeight={.9}
                     setTransform={(e, width, height) => e.position.set(-230 + width! / 2, (height! / 2) + 110, 0)}
