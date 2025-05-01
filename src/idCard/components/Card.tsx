@@ -1,7 +1,13 @@
 import * as THREE from "three";
 import { RenderTexture, useGLTF, useTexture } from "@react-three/drei";
 import { extend, useFrame, useThree } from "@react-three/fiber";
-import { BallCollider, CuboidCollider, RigidBody, useRopeJoint, useSphericalJoint } from "@react-three/rapier";
+import {
+  BallCollider,
+  CuboidCollider,
+  RigidBody,
+  useRopeJoint,
+  useSphericalJoint,
+} from "@react-three/rapier";
 import { MeshLineGeometry, MeshLineMaterial } from "meshline";
 import { useRef, useMemo } from "react";
 import { GLTF, MeshLineMesh, RigidBodyType, User } from "../types/types";
@@ -11,14 +17,27 @@ extend({ MeshLineGeometry, MeshLineMaterial });
 useGLTF.preload("/card.glb");
 useTexture.preload("/band.jpg");
 
-const segmentProps = { type: "dynamic", canSleep: true, colliders: false, angularDamping: 2, linearDamping: 2 } as const;
+const segmentProps = {
+  type: "dynamic",
+  canSleep: true,
+  colliders: false,
+  angularDamping: 2,
+  linearDamping: 2,
+} as const;
 
-const Card = ({ student: user, animationDuration = 3 }: { student: User; animationDuration?: number }) => {
+const Card = ({
+  student: user,
+  animationDuration = 3,
+}: {
+  student: User;
+  animationDuration?: number;
+}) => {
   const cardRef = useRef<THREE.Group>(null);
   const animationProgress = useRef(0);
   const startRotation = useRef(0);
   const targetRotation = useRef(0);
   const isRotating = useRef(false);
+  const isFlipped = useRef(false);
 
   const fixedPoint = useRef<RigidBodyType>(null);
   const ropeTop = useRef<RigidBodyType>(null);
@@ -33,7 +52,9 @@ const Card = ({ student: user, animationDuration = 3 }: { student: User; animati
   const { width, height } = useThree((state) => state.size);
 
   const curve = useMemo(() => {
-    const c = new THREE.CatmullRomCurve3(Array.from({ length: 4 }, () => new THREE.Vector3()));
+    const c = new THREE.CatmullRomCurve3(
+      Array.from({ length: 4 }, () => new THREE.Vector3())
+    );
     c.curveType = "chordal";
     return c;
   }, []);
@@ -48,7 +69,9 @@ const Card = ({ student: user, animationDuration = 3 }: { student: User; animati
   useRopeJoint(ropeMiddle as React.RefObject<RigidBodyType>, ropeBottom as React.RefObject<RigidBodyType>, [[0, 0, 0], [0, 0, 0], 1]);
   useSphericalJoint(ropeBottom as React.RefObject<RigidBodyType>, card as React.RefObject<RigidBodyType>, [[0, 0, 0], [0, 1.45, 0]]);
 
-  useMemo(() => { texture.wrapS = texture.wrapT = THREE.RepeatWrapping; }, [texture]);
+  useMemo(() => {
+    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+  }, [texture]);
 
   const elasticOut = (t: number) => {
     const p = 0.3;
@@ -56,20 +79,25 @@ const Card = ({ student: user, animationDuration = 3 }: { student: User; animati
   };
 
   const triggerRotation = () => {
-    card.current?.setAngvel({ x: 0, y: 4, z: 0 }, true);
+    isFlipped.current = !isFlipped.current;
+
+    const currentY = cardRef.current?.rotation.y ?? 0;
+    const normalizedY = currentY % (Math.PI * 2);
+
+    startRotation.current = normalizedY;
+    targetRotation.current = isFlipped.current ? Math.PI : 0;
+
+    animationProgress.current = 0;
+    isRotating.current = true;
+
+    // Add random movement for realism
+    card.current?.setAngvel({ x: 0, y: isFlipped.current ? 4 : 4, z: 0 }, true);
     const currentPos = card.current?.translation();
     card.current?.setTranslation({
       x: (currentPos?.x || 0) + (Math.random() - 0.5) * 0.6,
       y: (currentPos?.y || 0) - Math.random() * 0.1,
       z: (currentPos?.z || 0) + (Math.random() - 0.5) * 0.1,
     });
-
-    const currentY = cardRef.current?.rotation.y ?? 0;
-    startRotation.current = currentY;
-    targetRotation.current = currentY + Math.PI;
-
-    animationProgress.current = 0;
-    isRotating.current = true;
   };
 
   useFrame((_, delta) => {
@@ -83,7 +111,8 @@ const Card = ({ student: user, animationDuration = 3 }: { student: User; animati
       } else {
         const eased = elasticOut(progress);
         cardRef.current.rotation.y =
-          startRotation.current + (targetRotation.current - startRotation.current) * eased;
+          startRotation.current +
+          (targetRotation.current - startRotation.current) * eased;
       }
     }
 
@@ -129,20 +158,34 @@ const Card = ({ student: user, animationDuration = 3 }: { student: User; animati
           <BallCollider args={[0.1]} />
         </RigidBody>
 
-        <RigidBody ref={card} {...segmentProps} position={[2, 0, 0]} rotation={[0, Math.PI / 2, 0]}>
+        <RigidBody
+          ref={card}
+          {...segmentProps}
+          position={[2, 0, 0]}
+          rotation={[0, Math.PI / 2, 0]}
+        >
           <CuboidCollider args={[0.8, 1.125, 0.01]} />
           <group scale={3} position={[0, -2.125, -0.05]}>
             <group onClick={triggerRotation} ref={cardRef}>
               <mesh geometry={nodes.card.geometry}>
                 <meshPhysicalMaterial roughness={1} metalness={0}>
-                  <RenderTexture colorSpace={THREE.SRGBColorSpace} attach="map" width={1024} height={1024}>
+                  <RenderTexture
+                    colorSpace={THREE.SRGBColorSpace}
+                    attach="map"
+                    width={1024}
+                    height={1024}
+                  >
                     <CardTexture {...user} />
                   </RenderTexture>
                 </meshPhysicalMaterial>
               </mesh>
               <mesh geometry={nodes.clamp.geometry} material={materials.metal} />
             </group>
-            <mesh geometry={nodes.clip.geometry} material={materials.metal} material-roughness={0.3} />
+            <mesh
+              geometry={nodes.clip.geometry}
+              material={materials.metal}
+              material-roughness={0.3}
+            />
           </group>
         </RigidBody>
       </group>
