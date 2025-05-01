@@ -13,7 +13,7 @@ extend({ RoundedPlaneGeometry })
 
 export default function CardTexture({ firstName, lastName, userId, batch, batchId, date, profilePicture = 'https://ik.imagekit.io/technoaayush/Const/Frame_uXaqMEf0Bt.png' }: User) {
 
-    const templateTexture = useTexture('/images/template.png')
+    const templateTexture = useTexture('/images/template.svg')
 
     const codeRef = useRef<THREE.Group>(null)
 
@@ -71,7 +71,7 @@ export default function CardTexture({ firstName, lastName, userId, batch, batchI
                 <group position={[0, 85, 0.1]}>
                     <mesh position={[266, 0, 0]}>
                         <planeGeometry args={[20, 400]} />
-                        <meshBasicMaterial color='#D97E00' />
+                        <meshBasicMaterial color='#e68600' />
                     </mesh>
 
                     <mesh position={[256, 0, 0]}>
@@ -83,7 +83,7 @@ export default function CardTexture({ firstName, lastName, userId, batch, batchI
                 <CreateText
                     fontSize={58}
                     fillOpacity={0}
-                    strokeColor={"#D97E00"}
+                    strokeColor={"#e68600"}
                     strokeWidth={1.5}
                     lineHeight={.9}
                     setTransform={(e, width, height) => e.position.set(-230 + width! / 2, (height! / 2) + 110, 0)}

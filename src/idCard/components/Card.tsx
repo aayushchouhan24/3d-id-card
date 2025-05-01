@@ -135,7 +135,7 @@ const Card = ({ student: user, animationDuration = 4 }: { student: User; animati
           <group scale={3} position={[0, -2.125, -0.05]}>
             <group onClick={triggerRotation} ref={cardRef}>
               <mesh geometry={nodes.card.geometry}>
-                <meshPhysicalMaterial roughness={1} metalness={0}>
+                <meshPhysicalMaterial roughness={1} clearcoat={.5} clearcoatRoughness={1} metalness={.3}>
                   <RenderTexture colorSpace={THREE.SRGBColorSpace} attach="map" width={1024} height={1024}>
                     <CardTexture {...user} />
                   </RenderTexture>

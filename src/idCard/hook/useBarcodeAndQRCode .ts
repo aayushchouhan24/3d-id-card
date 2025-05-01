@@ -9,7 +9,7 @@ const BARCODE_DIMENSIONS = { width: 512, height: 100 };
 
 const qrCode = new QRCodeStyling({
     ...QR_DIMENSIONS,
-    image: "/logo.svg",
+    image: "/images//logo.svg",
     dotsOptions: { color: "#242424", type: "rounded" },
     imageOptions: {
         crossOrigin: "anonymous",
@@ -22,7 +22,7 @@ const qrCode = new QRCodeStyling({
         errorCorrectionLevel: "H",
     },
     backgroundOptions: {
-        color: "#FFFFFF00",
+        color: "#24242400",
         round: 1
     },
 });
@@ -74,7 +74,7 @@ const createBarcodeTexture = (upc: string, color: string): CanvasTexture => {
 
 export function useBarcodeAndQrTextures({
     upc = "123456789012",
-    color = "#232323",
+    color = "#242424",
 }) {
     const [textures, setTextures] = useState<{
         barcodeTexture?: CanvasTexture;
